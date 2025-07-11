@@ -1,12 +1,52 @@
+import { useState, useEffect } from "react";
+
 export default function Step2({ onNext, onBack }) {
+  const [college, setCollege] = useState("");
+  const [location, setLocation] = useState("");
+  const [touched, setTouched] = useState(false); // 👈 prevents Google autofill bypass
+
+  const isValid = college.trim() !== "" && location.trim() !== "";
+
+  const handleNext = () => {
+    if (isValid) {
+      onNext({ college: college.trim(), location: location.trim() });
+    }
+  };
+
+  useEffect(() => {
+    if (college || location) {
+      setTouched(true);
+    }
+  }, [college, location]);
+
   return (
     <div>
       <h2 style={title}>Where are you building from?</h2>
-      <input placeholder="College / University" style={input} />
-      <input placeholder="City / Location" style={input} />
+      <input
+        placeholder="College / University"
+        style={input}
+        value={college}
+        onChange={(e) => setCollege(e.target.value)}
+      />
+      <input
+        placeholder="City / Location"
+        style={input}
+        value={location}
+        onChange={(e) => setLocation(e.target.value)}
+      />
       <div style={btnGroup}>
         <button onClick={onBack} style={backBtn}>← Back</button>
-        <button onClick={onNext} style={nextBtn}>Next →</button>
+        <button
+          onClick={handleNext}
+          disabled={!isValid || !touched}
+          style={{
+            ...nextBtn,
+            opacity: isValid && touched ? 1 : 0.6,
+            cursor: isValid && touched ? "pointer" : "not-allowed",
+          }}
+        >
+          Next →
+        </button>
       </div>
     </div>
   );

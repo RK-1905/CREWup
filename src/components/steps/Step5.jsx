@@ -1,18 +1,46 @@
-export default function Step5({ onNext, onBack }) {
+import { useState, useEffect } from "react";
+
+export default function Step5({ onNext, onBack, formData, setFormData }) {
+  const [availability, setAvailability] = useState(formData.availability || "");
+
+  useEffect(() => {
+    setFormData((prev) => ({
+      ...prev,
+      availability,
+    }));
+  }, [availability]);
+
   return (
     <div>
       <h2 style={title}>When are you available to build?</h2>
-      <select style={select}>
-        <option>Select an option</option>
-        <option>Weekends only</option>
-        <option>Evenings only</option>
-        <option>Flexible hours</option>
-        <option>Available anytime</option>
+
+      <select
+        style={select}
+        value={availability}
+        onChange={(e) => setAvailability(e.target.value)}
+      >
+        <option value="">Select an option</option>
+        <option value="weekends">Weekends only</option>
+        <option value="evenings">Evenings only</option>
+        <option value="flexible">Flexible hours</option>
+        <option value="anytime">Available anytime</option>
       </select>
 
       <div style={btnGroup}>
-        <button onClick={onBack} style={backBtn}>← Back</button>
-        <button onClick={onNext} style={nextBtn}>Next →</button>
+        <button onClick={onBack} style={backBtn}>
+          ← Back
+        </button>
+        <button
+          onClick={onNext}
+          disabled={!availability}
+          style={{
+            ...nextBtn,
+            opacity: availability ? 1 : 0.5,
+            cursor: availability ? "pointer" : "not-allowed",
+          }}
+        >
+          Next →
+        </button>
       </div>
     </div>
   );

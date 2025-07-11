@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const predefinedInterests = [
   "Web3", "AI", "Startups", "Gaming", "Design", "Fintech", "HealthTech", "Open Source"
@@ -8,10 +8,12 @@ export default function Step3({ onNext, onBack }) {
   const [skills, setSkills] = useState([]);
   const [input, setInput] = useState("");
   const [interests, setInterests] = useState([]);
+  const [touched, setTouched] = useState(false); // ✅ Detects interaction
 
   const addSkill = () => {
-    if (input.trim() && !skills.includes(input.trim())) {
-      setSkills([...skills, input.trim()]);
+    const trimmed = input.trim();
+    if (trimmed && !skills.includes(trimmed)) {
+      setSkills([...skills, trimmed]);
       setInput("");
     }
   };
@@ -23,6 +25,20 @@ export default function Step3({ onNext, onBack }) {
       setInterests([...interests, tag]);
     }
   };
+
+  const isValid = (skills.length > 0 || interests.length > 0) && touched;
+
+  const handleNext = () => {
+    if (isValid) {
+      onNext({ skills, interests });
+    }
+  };
+
+  useEffect(() => {
+    if (skills.length > 0 || interests.length > 0) {
+      setTouched(true);
+    }
+  }, [skills, interests]);
 
   return (
     <>
@@ -64,7 +80,17 @@ export default function Step3({ onNext, onBack }) {
 
       <div style={btnGroup}>
         <button onClick={onBack} style={backBtn}>← Back</button>
-        <button onClick={onNext} style={nextBtn}>Next →</button>
+        <button
+          onClick={handleNext}
+          disabled={!isValid}
+          style={{
+            ...nextBtn,
+            opacity: isValid ? 1 : 0.6,
+            cursor: isValid ? "pointer" : "not-allowed",
+          }}
+        >
+          Next →
+        </button>
       </div>
     </>
   );

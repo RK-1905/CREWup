@@ -17,15 +17,19 @@ export default function Step4({ onNext, onBack, formData, setFormData }) {
     "https://api.dicebear.com/9.x/fun-emoji/svg?seed=Sawyer",
   ];
 
-  const [selected, setSelected] = useState(formData.avatar || avatarUrls[0]);
+  const [selected, setSelected] = useState(formData.avatar || "");
   const [uploaded, setUploaded] = useState(null);
+  const [touched, setTouched] = useState(false);
   const fileRef = useRef();
 
   useEffect(() => {
-    setFormData((prev) => ({
-      ...prev,
-      avatar: uploaded || selected,
-    }));
+    if (selected || uploaded) {
+      setTouched(true);
+      setFormData((prev) => ({
+        ...prev,
+        avatar: uploaded || selected,
+      }));
+    }
   }, [selected, uploaded]);
 
   const handleUpload = (e) => {
@@ -33,9 +37,11 @@ export default function Step4({ onNext, onBack, formData, setFormData }) {
     if (file) {
       const url = URL.createObjectURL(file);
       setUploaded(url);
-      setSelected(null); // remove selection if uploading
+      setSelected("");
     }
   };
+
+  const isValid = (selected || uploaded) && touched;
 
   return (
     <div style={{ textAlign: "center" }}>
@@ -143,9 +149,18 @@ export default function Step4({ onNext, onBack, formData, setFormData }) {
         </div>
       )}
 
-      <button style={nextBtn} onClick={onNext}>
+      <button
+        onClick={onNext}
+        disabled={!isValid}
+        style={{
+          ...nextBtn,
+          opacity: isValid ? 1 : 0.5,
+          cursor: isValid ? "pointer" : "not-allowed",
+        }}
+      >
         Next →
       </button>
+
       <button onClick={onBack} style={backBtn}>
         ← Back
       </button>
