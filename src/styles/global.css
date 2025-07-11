@@ -1,0 +1,33 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Space Grotesk', sans-serif;
+  background: #fff;
+  color: #111;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+html {
+  font-size: 16px;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+ .section {
+  padding: 10vh 5vw;
+  width: 100%;
+}
+
+
+h1, h2, h3 {
+  font-weight: 700;
+  line-height: 1.1;
+}
