@@ -3,7 +3,6 @@ import { supabase } from "../supabase/supabaseClient";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
-
 export default function Auth() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState("");
@@ -19,8 +18,36 @@ export default function Auth() {
       const { error } = await supabase.auth.signUp({ email, password });
       setMessage(error ? error.message : "Check your email to confirm sign up.");
     } else {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        if (error.message.includes("Invalid login credentials")) {
+          setMessage("Invalid email or password.");
+        } else if (error.message.includes("Email not confirmed")) {
+          setMessage("Please confirm your email before logging in.");
+        } else {
+          setMessage(error.message);
+        }
+        return;
+      }
+
       navigate("/onboarding");
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: "https://crewup.vercel.app/onboarding",
+      },
+    });
+
+    if (error) {
+      setMessage("Google login failed: " + error.message);
     }
   };
 
@@ -55,7 +82,14 @@ export default function Auth() {
           <h2 style={{ fontSize: "1.8rem", fontWeight: "700" }}>
             {isSignUp ? "Create an account" : "Sign in to CREWup"}
           </h2>
-          <div style={{ marginTop: "1rem", display: "flex", justifyContent: "center", gap: "1rem" }}>
+          <div
+            style={{
+              marginTop: "1rem",
+              display: "flex",
+              justifyContent: "center",
+              gap: "1rem",
+            }}
+          >
             <button
               onClick={() => setIsSignUp(false)}
               style={{
@@ -130,6 +164,25 @@ export default function Auth() {
             </button>
           </motion.form>
         </AnimatePresence>
+
+        <div style={{ textAlign: "center", marginTop: "1.5rem" }}>
+          <p style={{ marginBottom: "0.5rem", fontWeight: 500 }}>or</p>
+          <button
+            onClick={handleGoogleLogin}
+            style={{
+              width: "100%",
+              padding: "0.75rem",
+              borderRadius: "999px",
+              background: "#4285F4",
+              color: "#fff",
+              fontWeight: 600,
+              border: "none",
+              fontSize: "1rem",
+            }}
+          >
+            Continue with Google
+          </button>
+        </div>
 
         {message && (
           <motion.p
