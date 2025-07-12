@@ -1,7 +1,80 @@
 import { useNavigate } from "react-router-dom";
+import { supabase } from "../../supabase/supabaseClient";
+import { useState } from "react";
 
-export default function Step6({ onBack }) {
+export default function Step6({ onBack, formData }) {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleLaunch = async () => {
+    setLoading(true);
+    setError("");
+
+    const {
+      name,
+      age,
+      college,
+      location,
+      interests,
+      avatar,
+      availability,
+    } = formData;
+
+    try {
+      // ✅ Step 1: Ensure user is logged in
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
+
+      if (userError || !user) {
+        setError("You must be logged in to save your profile.");
+        setLoading(false);
+        return;
+      }
+
+      // ✅ Step 2: Format interests
+      const formattedInterests = Array.isArray(interests)
+        ? interests
+        : typeof interests === "string"
+        ? interests.split(",").map((s) => s.trim())
+        : [];
+
+      const payload = {
+        user_id: user.id,
+        name,
+        age: Number(age),
+        college: college || null,
+        location: location || null,
+        interests: formattedInterests,
+        avatar,
+        availability,
+      };
+
+      console.log("📦 Sending to Supabase:", payload);
+
+      // ✅ Step 3: Insert/Upsert profile (needs correct RLS policies)
+      const { error: insertError } = await supabase
+        .from("profiles")
+        .upsert(payload, { onConflict: ['user_id'] }); // ensure unique user update
+
+      if (insertError) {
+        console.error("🔥 Insert error:", insertError);
+        setError(`Failed to save your profile: ${insertError.message}`);
+        setLoading(false);
+        return;
+      }
+
+      // ✅ Step 4: Navigate
+      navigate("/dashboard", { state: { userName: name } });
+    } catch (err) {
+      console.error("⚠️ Unexpected error:", err);
+      setError("Unexpected error occurred.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div>
@@ -22,15 +95,22 @@ export default function Step6({ onBack }) {
         Time to join contests and find your crew.
       </p>
 
+      {error && <p style={{ color: "red", marginBottom: "1rem" }}>{error}</p>}
+
       <button
         type="button"
-        style={nextBtn}
-        onClick={() => navigate("/dashboard")}
+        style={{
+          ...nextBtn,
+          opacity: loading ? 0.6 : 1,
+          cursor: loading ? "wait" : "pointer",
+        }}
+        onClick={handleLaunch}
+        disabled={loading}
       >
-        🚀 Launch CREWup
+        {loading ? "🚀 Saving..." : "🚀 Launch CREWup"}
       </button>
 
-      <button onClick={onBack} style={backBtn}>
+      <button onClick={onBack} style={backBtn} disabled={loading}>
         ← Back
       </button>
     </div>
@@ -47,7 +127,6 @@ const nextBtn = {
   fontSize: "1rem",
   border: "none",
   marginTop: "1rem",
-  cursor: "pointer",
 };
 
 const backBtn = {
@@ -60,5 +139,4 @@ const backBtn = {
   fontSize: "1rem",
   border: "none",
   marginTop: "1rem",
-  cursor: "pointer",
 };

@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Topbar from "../components/Topbar";
+
 import Step1 from "./steps/Step1";
 import Step2 from "./steps/Step2";
 import Step3 from "./steps/Step3";
@@ -83,8 +85,9 @@ const wrapperStyle = {
   overflow: "hidden",
   backgroundColor: "#0f0f0f",
   display: "flex",
+  flexDirection: "column",
   alignItems: "center",
-  justifyContent: "center",
+  justifyContent: "center", // ✅ CENTER the card vertically
   position: "relative",
   padding: "2rem",
 };

@@ -41,4 +41,24 @@ input[type="number"]::-webkit-outer-spin-button {
 input[type="number"] {
   -moz-appearance: textfield; /* Firefox */
 }
+/* src/index.css or global.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .glow {
+    box-shadow: 0 0 8px rgba(0, 255, 255, 0.4), 0 0 12px rgba(255, 0, 255, 0.2);
+  }
+
+  .glass {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .shine-on-hover:hover {
+    box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
+  }
+}
 

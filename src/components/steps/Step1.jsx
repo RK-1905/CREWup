@@ -1,23 +1,26 @@
 import { useState, useEffect } from "react";
 
-export default function Step1({ onNext }) {
+export default function Step1({ onNext, setFormData }) {
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
-  const [touched, setTouched] = useState(false); // 👈 add touched to detect user interaction
+  const [touched, setTouched] = useState(false);
 
   const isValid = name.trim() !== "" && age.trim() !== "" && !isNaN(age);
 
   const handleNext = () => {
     if (isValid) {
-      onNext({ name: name.trim(), age: Number(age) });
+      // Save name in form data
+      setFormData((prev) => ({ ...prev, name: name.trim(), age: Number(age) }));
+
+      // ✅ Save name to localStorage for Dashboard
+      localStorage.setItem("crewupUserName", name.trim());
+
+      onNext();
     }
   };
 
-  // Ensure Next button only activates *after* form is touched — fixes Google autofill bypass
   useEffect(() => {
-    if (name || age) {
-      setTouched(true);
-    }
+    if (name || age) setTouched(true);
   }, [name, age]);
 
   return (
