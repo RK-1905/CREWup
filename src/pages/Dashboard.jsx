@@ -27,23 +27,48 @@ const Dashboard = () => {
         return;
       }
 
-      const { data, error } = await supabase
-        .from("profiles") // or "user_profiles" if you're using that table
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
         .select("*")
         .eq("user_id", user.id)
         .single();
 
-      if (error) {
-        console.error("❌ Profile fetch error:", error.message);
+      if (profileError) {
+        console.error("❌ Profile fetch error:", profileError.message);
       } else {
-        setProfileData(data);
-        setUserName(data.name || "Explorer");
-        localStorage.setItem("crewupUserName", data.name || "Explorer");
+        // ✅ Attach email to profile data
+        const fullProfile = { ...profile, email: user.email };
+
+        setProfileData(fullProfile);
+        setUserName(profile.name || "Explorer");
+        localStorage.setItem("crewupUserName", profile.name || "Explorer");
       }
     };
 
     fetchUserAndProfile();
   }, [navigate]);
+
+  // ✅ Re-fetch profile on avatar click to ensure latest info
+  const handleAvatarClick = async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    const { data: profile, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("user_id", user.id)
+      .single();
+
+    if (error) {
+      console.error("❌ Refresh profile error:", error.message);
+      return;
+    }
+
+    const fullProfile = { ...profile, email: user.email };
+    setProfileData(fullProfile);
+    setShowProfile(true);
+  };
 
   return (
     <div className="flex bg-[#0a0a0a] text-white min-h-screen overflow-hidden">
@@ -52,7 +77,7 @@ const Dashboard = () => {
       <div className="ml-[75px] flex-1 flex flex-col">
         <Topbar
           userName={userName}
-          onAvatarClick={() => setShowProfile(true)}
+          onAvatarClick={handleAvatarClick}
         />
 
         <main className="flex-1 overflow-y-auto p-6 sm:p-10 bg-gradient-to-br from-[#0f0f0f] via-[#111827] to-[#1f2937]">
