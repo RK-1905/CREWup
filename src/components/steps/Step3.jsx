@@ -4,10 +4,10 @@ const predefinedInterests = [
   "Web3", "AI", "Startups", "Gaming", "Design", "Fintech", "HealthTech", "Open Source"
 ];
 
-export default function Step3({ onNext, onBack, formData, setFormData }) {
-  const [skills, setSkills] = useState(formData.skills || []);
+export default function Step3({ onNext, onBack }) {
+  const [skills, setSkills] = useState([]);
   const [input, setInput] = useState("");
-  const [interests, setInterests] = useState(formData.interests || []);
+  const [interests, setInterests] = useState([]);
   const [touched, setTouched] = useState(false);
 
   const addSkill = () => {
@@ -30,12 +30,7 @@ export default function Step3({ onNext, onBack, formData, setFormData }) {
 
   const handleNext = () => {
     if (isValid) {
-      setFormData((prev) => ({
-        ...prev,
-        skills,
-        interests,
-      }));
-      onNext();
+      onNext({ skills, interests });
     }
   };
 
@@ -100,3 +95,81 @@ export default function Step3({ onNext, onBack, formData, setFormData }) {
     </>
   );
 }
+
+const title = {
+  fontSize: "1.5rem",
+  fontWeight: "700",
+  marginBottom: "1rem",
+};
+
+const subtitle = {
+  fontSize: "1rem",
+  fontWeight: "500",
+  margin: "1.2rem 0 0.5rem",
+};
+
+const inputStyle = {
+  width: "100%",
+  padding: "0.75rem",
+  borderRadius: "10px",
+  border: "1px solid #ccc",
+  fontSize: "1rem",
+  marginBottom: "1rem",
+  background: "rgba(255,255,255,0.1)", // ✅ subtle background
+  color: "#fff",                       // ✅ fixes invisible typing issue
+};
+
+const tagContainer = {
+  display: "flex",
+  flexWrap: "wrap",
+  gap: "0.5rem",
+  marginBottom: "1rem",
+};
+
+const skillTag = {
+  padding: "0.5rem 0.9rem",
+  borderRadius: "20px",
+  background: "#00c9a7",
+  color: "#fff",
+  fontWeight: 500,
+  fontSize: "0.9rem",
+  border: "none",
+};
+
+const interestTag = {
+  padding: "0.5rem 0.9rem",
+  borderRadius: "20px",
+  fontWeight: 500,
+  fontSize: "0.9rem",
+  border: "none",
+  cursor: "pointer",
+  transition: "0.3s ease",
+};
+
+const btnGroup = {
+  display: "flex",
+  gap: "1rem",
+  marginTop: "1.5rem",
+};
+
+const nextBtn = {
+  flex: 1,
+  padding: "0.75rem",
+  borderRadius: "999px",
+  background: "#00c9a7",
+  color: "#fff",
+  fontWeight: 600,
+  border: "none",
+  fontSize: "1rem",
+};
+
+const backBtn = {
+  flex: 1,
+  padding: "0.75rem",
+  borderRadius: "999px",
+  background: "#eee",
+  color: "#333",
+  fontWeight: 600,
+  border: "none",
+  fontSize: "1rem",
+};
