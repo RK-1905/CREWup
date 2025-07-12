@@ -1,37 +1,49 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
 import EventCard from "../components/EventCard";
 import ProfilePanel from "../components/ProfilePanel";
 import { dummyEvents } from "../data/dummyEvents";
-import { supabase } from "../supabase/supabaseClient"; // ✅ Import Supabase
+import { supabase } from "../supabase/supabaseClient";
 
 const Dashboard = () => {
-  const location = useLocation();
+  const navigate = useNavigate();
   const [profileData, setProfileData] = useState(null);
   const [showProfile, setShowProfile] = useState(false);
+  const [userName, setUserName] = useState("Explorer");
 
-  const userName = location.state?.userName || localStorage.getItem("crewupUserName") || "Explorer";
-
-  // ✅ Load profile from Supabase
+  // ✅ Check auth and fetch profile
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchUserAndProfile = async () => {
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
+
+      if (userError || !user) {
+        console.error("⛔ Not logged in");
+        navigate("/"); // redirect if not authenticated
+        return;
+      }
+
       const { data, error } = await supabase
-        .from("user_profiles")
+        .from("profiles") // or "user_profiles" if you're using that table
         .select("*")
-        .eq("name", userName)
+        .eq("user_id", user.id)
         .single();
 
       if (error) {
-        console.error("❌ Supabase error:", error.message);
+        console.error("❌ Profile fetch error:", error.message);
       } else {
         setProfileData(data);
+        setUserName(data.name || "Explorer");
+        localStorage.setItem("crewupUserName", data.name || "Explorer");
       }
     };
 
-    fetchProfile();
-  }, [userName]);
+    fetchUserAndProfile();
+  }, [navigate]);
 
   return (
     <div className="flex bg-[#0a0a0a] text-white min-h-screen overflow-hidden">
@@ -57,7 +69,10 @@ const Dashboard = () => {
 
         {/* ✅ Profile Drawer */}
         {showProfile && (
-          <ProfilePanel data={profileData} onClose={() => setShowProfile(false)} />
+          <ProfilePanel
+            data={profileData}
+            onClose={() => setShowProfile(false)}
+          />
         )}
       </div>
     </div>
