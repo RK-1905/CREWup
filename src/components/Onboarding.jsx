@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import Topbar from "../components/Topbar";
+import { supabase } from "../supabase/supabaseClient";
 
 import Step1 from "./steps/Step1";
 import Step2 from "./steps/Step2";
@@ -14,10 +15,40 @@ const steps = [Step1, Step2, Step3, Step4, Step5, Step6];
 export default function Onboarding() {
   const [step, setStep] = useState(0);
   const [formData, setFormData] = useState({});
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkProfile = async () => {
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
+
+      if (userError || !user) return;
+
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("user_id", user.id)
+        .single();
+
+      if (
+        !profileError &&
+        profile?.name &&
+        profile?.college &&
+        profile?.interests &&
+        profile.interests.length > 0
+      ) {
+        // ✅ Redirect to dashboard
+        navigate("/dashboard", { state: { userName: profile.name } });
+      }
+    };
+
+    checkProfile();
+  }, []);
 
   const CurrentStep = steps[step];
 
-  // ✅ Updated next function to collect formData
   const next = (stepData = {}) => {
     setFormData((prev) => ({ ...prev, ...stepData }));
     if (step < steps.length - 1) setStep(step + 1);
