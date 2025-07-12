@@ -168,7 +168,7 @@ export const dummyEvents = [
     createdBy: "Zoya Sheikh",
     creatorAvatar: getAvatarFromName("Zoya Sheikh"),
     techStack: ["React Native", "Dialogflow", "Express.js"],
-    image: "/event-images/voiceai.jpeg.png",
+    image: "/event-images/voiceai.jpeg.jpeg",
     tags: ["Voice", "AI", "Remote"],
     link: "#",
   },
