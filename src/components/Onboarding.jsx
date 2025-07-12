@@ -16,8 +16,16 @@ export default function Onboarding() {
   const [formData, setFormData] = useState({});
 
   const CurrentStep = steps[step];
-  const next = () => step < steps.length - 1 && setStep(step + 1);
-  const back = () => step > 0 && setStep(step - 1);
+
+  // ✅ Updated next function to collect formData
+  const next = (stepData = {}) => {
+    setFormData((prev) => ({ ...prev, ...stepData }));
+    if (step < steps.length - 1) setStep(step + 1);
+  };
+
+  const back = () => {
+    if (step > 0) setStep(step - 1);
+  };
 
   return (
     <div style={wrapperStyle}>
@@ -43,6 +51,7 @@ export default function Onboarding() {
               setFormData={setFormData}
             />
 
+            {/* Progress bar */}
             <div style={{ marginTop: "2rem", width: "100%" }}>
               <div
                 style={{
@@ -87,7 +96,7 @@ const wrapperStyle = {
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
-  justifyContent: "center", // ✅ CENTER the card vertically
+  justifyContent: "center",
   position: "relative",
   padding: "2rem",
 };
