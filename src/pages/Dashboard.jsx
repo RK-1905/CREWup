@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
-import EventCard from "../components/Eventcard";
+import EventCard from "../components/EventCard";
 import ProfilePanel from "../components/ProfilePanel";
 import { dummyEvents } from "../data/dummyEvents";
 import { supabase } from "../supabase/supabaseClient"; // ✅ Import Supabase
