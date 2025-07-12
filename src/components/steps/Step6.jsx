@@ -34,7 +34,7 @@ export default function Step6({ onBack, formData }) {
         return;
       }
 
-      // ✅ Format interests array
+      // ✅ Ensure interests is an array
       const formattedInterests = Array.isArray(interests)
         ? interests
         : typeof interests === "string"
@@ -48,7 +48,7 @@ export default function Step6({ onBack, formData }) {
         age: Number(age),
         college: college || null,
         location: location || null,
-        interests: formattedInterests,
+        interests: formattedInterests, // ✅ store as text[] for Supabase
         avatar,
         availability,
       };

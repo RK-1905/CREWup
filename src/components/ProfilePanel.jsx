@@ -17,6 +17,17 @@ const ProfilePanel = ({ data, onClose }) => {
           👤 Your Profile
         </h2>
 
+        {/* ✅ Avatar */}
+        {data.avatar && (
+          <div className="flex justify-center mb-4">
+            <img
+              src={data.avatar}
+              alt="Avatar"
+              className="w-24 h-24 rounded-full border-2 border-gray-500 object-cover"
+            />
+          </div>
+        )}
+
         <div className="space-y-4 text-sm">
           <p><span className="text-gray-400">Name:</span> {data.name || "N/A"}</p>
           <p><span className="text-gray-400">Age:</span> {data.age || "N/A"}</p>
