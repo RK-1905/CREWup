@@ -124,7 +124,7 @@ const EventCard = ({ event }) => {
           rel="noreferrer"
           className="mt-4 inline-flex items-center gap-2 text-cyan-300 hover:underline text-sm font-medium"
         >
-          Join Event <FiExternalLink />
+          Joining Events is coming soon.Stay tuned! 🚀 <FiExternalLink />
         </a>
       </div>
     </motion.div>
