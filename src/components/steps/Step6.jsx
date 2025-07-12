@@ -22,7 +22,7 @@ export default function Step6({ onBack, formData }) {
     } = formData;
 
     try {
-      // ✅ Step 1: Ensure user is logged in
+      // ✅ Get logged-in user
       const {
         data: { user },
         error: userError,
@@ -34,13 +34,14 @@ export default function Step6({ onBack, formData }) {
         return;
       }
 
-      // ✅ Step 2: Format interests
+      // ✅ Format interests array
       const formattedInterests = Array.isArray(interests)
         ? interests
         : typeof interests === "string"
         ? interests.split(",").map((s) => s.trim())
         : [];
 
+      // ✅ Prepare payload
       const payload = {
         user_id: user.id,
         name,
@@ -54,10 +55,22 @@ export default function Step6({ onBack, formData }) {
 
       console.log("📦 Sending to Supabase:", payload);
 
-      // ✅ Step 3: Insert/Upsert profile (needs correct RLS policies)
+      // ✅ Step 3: Set user_id context via RPC
+      const { error: rpcError } = await supabase.rpc("set_user_id_context", {
+        uid: user.id,
+      });
+
+      if (rpcError) {
+        console.error("⚠️ RPC error:", rpcError);
+        setError("Could not set user context.");
+        setLoading(false);
+        return;
+      }
+
+      // ✅ Step 4: Upsert profile
       const { error: insertError } = await supabase
         .from("profiles")
-        .upsert(payload, { onConflict: ['user_id'] }); // ensure unique user update
+        .upsert(payload, { onConflict: ["user_id"] });
 
       if (insertError) {
         console.error("🔥 Insert error:", insertError);
@@ -66,7 +79,7 @@ export default function Step6({ onBack, formData }) {
         return;
       }
 
-      // ✅ Step 4: Navigate
+      // ✅ Navigate to dashboard
       navigate("/dashboard", { state: { userName: name } });
     } catch (err) {
       console.error("⚠️ Unexpected error:", err);
