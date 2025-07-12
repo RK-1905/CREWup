@@ -8,7 +8,7 @@ export default function Step3({ onNext, onBack }) {
   const [skills, setSkills] = useState([]);
   const [input, setInput] = useState("");
   const [interests, setInterests] = useState([]);
-  const [touched, setTouched] = useState(false); // ✅ Detects interaction
+  const [touched, setTouched] = useState(false);
 
   const addSkill = () => {
     const trimmed = input.trim();
@@ -115,6 +115,8 @@ const inputStyle = {
   border: "1px solid #ccc",
   fontSize: "1rem",
   marginBottom: "1rem",
+  background: "rgba(255,255,255,0.1)", // ✅ subtle background
+  color: "#fff",                       // ✅ fixes invisible typing issue
 };
 
 const tagContainer = {

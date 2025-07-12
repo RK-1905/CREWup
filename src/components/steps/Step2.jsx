@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 export default function Step2({ onNext, onBack }) {
   const [college, setCollege] = useState("");
   const [location, setLocation] = useState("");
-  const [touched, setTouched] = useState(false); // 👈 prevents Google autofill bypass
+  const [touched, setTouched] = useState(false);
 
   const isValid = college.trim() !== "" && location.trim() !== "";
 
